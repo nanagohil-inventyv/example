@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Login System</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <div class="container">
+
+    <!-- LEFT SIDE -->
+    <div class="left">
+      <div class="image-circle"></div>
+      <p>
+        Welcome! Please login or create a new account.
+        This demo is built using only HTML and CSS.
+      </p>
+    </div>
+
+    <!-- RIGHT SIDE -->
+    <div class="right">
+
+      <!-- Radio Buttons -->
+      <input type="radio" name="form" id="login" checked>
+      <input type="radio" name="form" id="signup">
+      <!-- LOGIN -->
+      <div class="card login-card">
+        <h2>Login</h2>
+        <form method="post" action="/">
+          <input type="email" placeholder="Email">
+          <input type="password" placeholder="Password">
+
+          <a href="#">Forgot password?</a>
+          <button>Login</button>
+
+          <p>
+            Don't have an account?
+            <label for="signup" class="link">Signup</label>
+          </p>
+      </div>
+      </form>
+
+      <!-- SIGNUP -->
+      <div class="card signup-card">
+        <h2>Signup</h2>
+        <form action="/" method="post">
+          <input type="text" placeholder="Full Name">
+          <input type="email" placeholder="Email">
+          <input type="password" placeholder="Password">
+          <button>Create Account</button>
+
+          <p>
+            Already have an account?
+            <label for="login" class="link">Login</label>
+          </p>
+      </div>
+      </form>
+
+
+    </div>
+  </div>
+
+</body>
+
+</html>
