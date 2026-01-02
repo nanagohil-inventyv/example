@@ -220,48 +220,104 @@ WHERE mr.mov_id IS NULL;
 ```
 ### Result
 
+| mov_title                |
+|--------------------------|
+| The Deer Hunter          |
+| Amadeus                  |
+| Eyes Wide Shut           |
+| The Shawshank Redemption |
+| Deliverance              |
+| The Prestige             |
+| Spirited Away            |
+| Back to the Future       |
+| Braveheart               |
 
 
-8. Write a SQL query to find the movies with ID 905 or 907 or 917. Return movie title.
 
-9. Write a SQL query to find the movie titles that contain the word 'Boogie Nights'. Sort the result-set in ascending order by movie year. Return movie ID, movie title and movie release year.
+### 8. Write a SQL query to find the movies with ID 905 or 907 or 917. Return movie title.
+
+### SQL Query
+
+```sql
+SELECT mov_title FROM movie WHERE mov_id IN (905 , 907 , 917)
+```
+### Result
+| mov_title |
+|-----------|
+
+
+### 9. Write a SQL query to find the movie titles that contain the word '*Boogie Nights*'. Sort the result-set in ascending order by movie year. Return movie ID, movie title and movie release year.
+
+### SQL Query
+
+```sql
+SELECT 
+    mov_id , 
+    mov_title , 
+    YEAR(mov_dt_rel)
+FROM movie 
+WHERE mov_title LIKE '%Boogie Nights%'
+ORDER BY mov_year;
+```
+### Result
+
+| mov_id | mov_title     | YEAR(mov_dt_rel) |
+|--------|---------------|------------------|
+|     10 | Boogie Nights |             1998 |
+
 
 10. Write a SQL query to find those actors with the first name 'Woody' and the last name 'Allen'. Return actor ID.
 
+### SQL Query 
+
+```sql
+SELECT 
+    act_id 
+FROM actor 
+WHERE act_fname = 'Woody'
+AND act_lname = 'Allen';
+```
+
+### Result
+
+| act_id |
+|--------|
+|     11 |
 
 ## Sub-Queries :
 
-	11. Write a SQL query to find the actors who played a role in the movie 'Annie Hall'. Return all the fields of actor table.
+### 11. Write a SQL query to find the actors who played a role in the movie 'Annie Hall'. Return all the fields of actor table.
 
-	12. Write a SQL query to find the director of a film that cast a role in 'Eyes Wide Shut'. Return director first name, last name.
+### 12. Write a SQL query to find the director of a film that cast a role in 'Eyes Wide Shut'. Return director first name, last name.
 
-	13. Write a SQL query to find those movies that have been released in countries other than the United Kingdom. Return movie title, movie year, movie time, and date of release, releasing country.
+### 13. Write a SQL query to find those movies that have been released in countries other than the United Kingdom. Return movie title, movie year, movie time, and date of release, releasing country.
 
-	14. Write a SQL query to find for movies whose reviewer is unknown. Return movie title, year, release date, director first name, last name, actor first name, last name.
+### 14. Write a SQL query to find for movies whose reviewer is unknown. Return movie title, year, release date, director first name, last name, actor first name, last name.
 
-	15. Write a SQL query to find those movies directed by the director whose first name is Woddy and last name is Allen. Return movie title.
+### 15. Write a SQL query to find those movies directed by the director whose first name is Woddy and last name is Allen. Return movie title.
 
-	16. Write a SQL query to determine those years in which there was at least one movie that received a rating of at least three stars. Sort the result-set in ascending order by movie year. Return movie year.
+### 16. Write a SQL query to determine those years in which there was at least one movie that received a rating of at least three stars. Sort the result-set in ascending order by movie year. Return movie year.
 
-	17. Write a SQL query to search for movies that do not have any ratings. Return movie title.
+### 17. Write a SQL query to search for movies that do not have any ratings. Return movie title.
 
-	18. Write a SQL query to find those reviewers who have not given a rating to certain films. Return reviewer name.
+### 18. Write a SQL query to find those reviewers who have not given a rating to certain films. Return reviewer name.
 
-	19. Write a SQL query to find movies that have been reviewed by a reviewer and received a rating. Sort the result-set in ascending order by reviewer name, movie title, review Stars. Return reviewer name, movie title, review Stars.
+### 19. Write a SQL query to find movies that have been reviewed by a reviewer and received a rating. Sort the result-set in ascending order by reviewer name, movie title, review Stars. Return reviewer name, movie title, review Stars.
 
-	20. Write a SQL query to find movies that have been reviewed by a reviewer and received a rating. Group the result set on reviewer’s name, movie title. Return reviewer’s name, movie title.
+### 20. Write a SQL query to find movies that have been reviewed by a reviewer and received a rating. Group the result set on reviewer’s name, movie title. Return reviewer’s name, movie title.
 
-	21. Write a SQL query to find those movies, which have received highest number of stars. Group the result set on movie title and sorts the result-set in ascending order by movie title. Return movie title and maximum number of review stars.
+### 21. Write a SQL query to find those movies, which have received highest number of stars. Group the result set on movie title and sorts the result-set in ascending order by movie title. Return movie title and maximum number of review stars.
 
-	22. Write a SQL query to find all reviewers who rated the movie 'American Beauty'. Return reviewer name.
+### 22. Write a SQL query to find all reviewers who rated the movie 'American Beauty'. Return reviewer name.
 
-	23. Write a SQL query to find the movies that have not been reviewed by any reviewer body other than 'Paul Monks'. Return movie title.
+### 23. Write a SQL query to find the movies that have not been reviewed by any reviewer body other than 'Paul Monks'. Return movie title.
 
-	24. Write a SQL query to find the movies with the lowest ratings. Return reviewer name, movie title, and number of stars for those movies.
+### 24. Write a SQL query to find the movies with the lowest ratings. Return reviewer name, movie title, and number of stars for those movies.
 
-	25. Write a SQL query to find the movies directed by 'James Cameron'. Return movie title.
+### 25. Write a SQL query to find the movies directed by 'James Cameron'. Return movie title.
 
-	26. Write a query in SQL to find the movies in which one or more actors appeared in more than one film.
+### 26. Write a query in SQL to find the movies in which one or more actors appeared in more than one film.
+
 
 ## Joins :
 
