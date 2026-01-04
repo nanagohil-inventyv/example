@@ -25,7 +25,15 @@ void solve()
 
             if (dial < 0)
             {
+               
                 dial = (dial  + 100) % 100;
+                
+                if(dial >= 1 && dial <= 99)
+                    password++;
+                else if(dial == 0){
+                    password++;
+                }
+                
             }
         }
         else
@@ -34,13 +42,19 @@ void solve()
 
             if (dial > 99)
             {
+
                 dial %= 100;
+                if(dial >= 1)
+                    password++;
+                else if(dial == 0){
+                    password++;
+                }
             }
         }
-        if (dial == 0)
-        {
-            password++;
-        }
+        // if( dial == 0){
+        //     password++;
+        // }
+        
     }
 
     cout << "password " << password << endl;

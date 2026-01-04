@@ -266,7 +266,7 @@ ORDER BY mov_year;
 |     10 | Boogie Nights |             1998 |
 
 
-10. Write a SQL query to find those actors with the first name 'Woody' and the last name 'Allen'. Return actor ID.
+### 10. Write a SQL query to find those actors with the first name 'Woody' and the last name 'Allen'. Return actor ID.
 
 ### SQL Query 
 
@@ -284,44 +284,447 @@ AND act_lname = 'Allen';
 |--------|
 |     11 |
 
+
 ## Sub-Queries :
 
 ### 11. Write a SQL query to find the actors who played a role in the movie 'Annie Hall'. Return all the fields of actor table.
 
+### SQL Query
+```sql
+SELECT *
+FROM actor
+WHERE act_id IN (
+    SELECT act_id
+    FROM movie_cast
+    WHERE mov_id IN (
+        SELECT mov_id
+        FROM movie
+        WHERE mov_title = 'Annie Hall'
+    )
+);
+```
+### Result 
+
+| act_id | act_fname | act_lname | act_gender |
+|--------|-----------|-----------|------------|
+|     11 | Woody     | Allen     | M          |
+
+
 ### 12. Write a SQL query to find the director of a film that cast a role in 'Eyes Wide Shut'. Return director first name, last name.
+
+### SQL Query
+```sql
+SELECT
+    dir_fname , dir_lname
+FROM director 
+WHERE dir_id IN(
+    SELECT 
+    dir_id
+    FROM movie_direction 
+    WHERE mov_id IN (
+        SELECT 
+            mov_id 
+        FROM movie
+        WHERE mov_title  = 'Eyes Wide Shut'
+    )
+
+);
+```
+### Result
+
+| dir_fname | dir_lname |
+|-----------|-----------|
+| Stanley   | Kubrick   |
+
 
 ### 13. Write a SQL query to find those movies that have been released in countries other than the United Kingdom. Return movie title, movie year, movie time, and date of release, releasing country.
 
+### SQL Query 
+```sql
+SELECT
+    mov_title,
+    mov_year,
+    mov_time,
+    mov_dt_rel,
+    mov_rel_country
+FROM movie 
+WHERE mov_rel_country <> 'UK';
+```
+### Result
+
+| mov_title     | mov_year | mov_time | mov_dt_rel | mov_rel_country |
+|---------------|----------|----------|------------|-----------------|
+| The Innocents |     1961 |      100 | 1962-02-19 | SW              |
+| Annie Hall    |     1977 |       93 | 1977-04-20 | USA             |
+| Seven Samurai |     1954 |      207 | 1954-04-26 | JP              |
+
+
+
 ### 14. Write a SQL query to find for movies whose reviewer is unknown. Return movie title, year, release date, director first name, last name, actor first name, last name.
+
+### SQL Query
+```sql
+SELECT 
+    m.mov_title,
+    m.mov_year,
+    m.mov_dt_rel,
+    d.dir_fname,
+    d.dir_lname,
+    a.act_fname,
+    a.act_lname
+FROM movie m
+JOIN  movie_rating mt ON  m.mov_id = mt.mov_id
+JOIN movie_direction md ON m.mov_id = md.mov_id
+JOIN movie_reviewer mr ON mt.rev_id = mr.rev_id 
+JOIN movie_cast mc ON mc.mov_id = m.mov_id
+JOIN actor a ON a.act_id = mc.act_id
+JOIN director d ON d.dir_id = md.dir_id 
+WHERE mr.rev_name IS NULL OR mr.rev_name = '';
+```
+### Result 
+
+| mov_title         | mov_year | mov_dt_rel | dir_fname | dir_lname | act_fname | act_lname |
+|-------------------|----------|------------|-----------|-----------|-----------|-----------|
+| Blade Runner      |     1982 | 1982-09-09 | Ridley    | Scott     | Harrison  | Ford      |
+| Princess Mononoke |     1997 | 2001-10-19 | Hayao     | Miyazaki  | Claire    | Danes     |
+
 
 ### 15. Write a SQL query to find those movies directed by the director whose first name is Woddy and last name is Allen. Return movie title.
 
+### SQL Query
+
+``` sql
+SELECT 
+    mov_title
+FROM movie
+WHERE mov_id IN(
+    SELECT 
+        md.mov_id
+    FROM movie_direction md 
+    JOIN director d ON md.dir_id = d.dir_id
+    WHERE d.dir_fname = 'Woddy' AND d.dir_lname = 'Allen'
+);
+```
+### Result
+| mov_title  |
+|------------|
+| Annie Hall |
+
 ### 16. Write a SQL query to determine those years in which there was at least one movie that received a rating of at least three stars. Sort the result-set in ascending order by movie year. Return movie year.
+
+### SQL Query
+```sql
+SELECT DISTINCT 
+    mov_year
+FROM movie 
+WHERE mov_id IN (
+    SELECT 
+        mov_id 
+    FROM movie_rating 
+    WHERE rev_stars >= 3
+) ORDER BY mov_year ASC;
+```
+### Result
+
+| mov_year |
+|----------|
+|     1954 |
+|     1958 |
+|     1961 |
+|     1962 |
+|     1977 |
+|     1982 |
+|     1986 |
+|     1995 |
+|     1997 |
+|     1999 |
+|     2001 |
+|     2004 |
+|     2008 |
+|     2009 |
+
 
 ### 17. Write a SQL query to search for movies that do not have any ratings. Return movie title.
 
+### SQL Query 
+```sql
+SELECT 
+    mov_title 
+FROM movie 
+WHERE mov_id NOT IN (SELECT
+        mov_id 
+        FROM movie_rating
+);
+```
+### Result 
+
+| mov_title                |
+|--------------------------|
+| The Deer Hunter          |
+| Amadeus                  |
+| Eyes Wide Shut           |
+| The Shawshank Redemption |
+| Deliverance              |
+| The Prestige             |
+| Spirited Away            |
+| Back to the Future       |
+| Braveheart               |
+
+
+
+
 ### 18. Write a SQL query to find those reviewers who have not given a rating to certain films. Return reviewer name.
+
+### SQL Query 
+```sql
+SELECT rev_name FROM movie_reviewer WHERE rev_id IN (
+    SELECT rev_id FROM movie_rating WHERE rev_stars IS NULL
+);
+```
+### Result
+
+| rev_name     |
+|--------------|
+| Neal Wruck   |
+| Scott LeBrun |
+
 
 ### 19. Write a SQL query to find movies that have been reviewed by a reviewer and received a rating. Sort the result-set in ascending order by reviewer name, movie title, review Stars. Return reviewer name, movie title, review Stars.
 
+### SQL Query
+```sql
+SELECT r.rev_name, m.mov_title, rt.rev_stars 
+FROM movie_reviewer r, movie m, movie_rating rt
+WHERE r.rev_id = rt.rev_id AND m.mov_id = rt.mov_id AND rt.rev_stars IS NOT NULL
+ORDER BY r.rev_name, m.mov_title, rt.rev_stars;
+
+```
+### Result
+
+| rev_name           | mov_title           | rev_stars |
+|--------------------|---------------------|-----------|
+|                    | Blade Runner        |       8.2 |
+|                    | Princess Mononoke   |       8.4 |
+| Brandt Sponseller  | Aliens              |       8.4 |
+| Flagrant Baronessa | Lawrence of Arabia  |       8.3 |
+| Hannah Steele      | Donnie Darko        |       8.1 |
+| Jack Malvern       | The Innocents       |       7.9 |
+| Josh Cates         | Good Will Hunting   |       4.0 |
+| Krug Stillo        | Seven Samurai       |       7.7 |
+| Mike Salvati       | Annie Hall          |       8.1 |
+| Paul Monks         | Boogie Nights       |       3.0 |
+| Richard Adams      | Beyond the Sea      |       6.7 |
+| Righty Sock        | Titanic             |       7.7 |
+| Righty Sock        | Vertigo             |       8.4 |
+| Sasha Goldshtein   | American Beauty     |       7.0 |
+| Simon Wright       | The Usual Suspects  |       8.6 |
+| Victor Woeltjen    | Avatar              |       7.3 |
+| Vincent Cadena     | Slumdog Millionaire |       8.0 |
+
+
 ### 20. Write a SQL query to find movies that have been reviewed by a reviewer and received a rating. Group the result set on reviewer’s name, movie title. Return reviewer’s name, movie title.
+
+### SQL Query
+
+```sql
+SELECT r.rev_name, m.mov_title 
+FROM movie_reviewer r 
+JOIN movie_rating rt ON r.rev_id = rt.rev_id 
+JOIN movie m ON rt.mov_id = m.mov_id 
+GROUP BY r.rev_name, m.mov_title;
+```
+
+
+| rev_name           | mov_title           |
+|--------------------|---------------------|
+| Righty Sock        | Vertigo             |
+| Righty Sock        | Titanic             |
+| Jack Malvern       | The Innocents       |
+| Flagrant Baronessa | Lawrence of Arabia  |
+|                    | Blade Runner        |
+| Victor Woeltjen    | Avatar              |
+| Simon Wright       | The Usual Suspects  |
+| Neal Wruck         | Chinatown           |
+| Paul Monks         | Boogie Nights       |
+| Mike Salvati       | Annie Hall          |
+|                    | Princess Mononoke   |
+| Sasha Goldshtein   | American Beauty     |
+| Josh Cates         | Good Will Hunting   |
+| Krug Stillo        | Seven Samurai       |
+| Scott LeBrun       | Trainspotting       |
+| Hannah Steele      | Donnie Darko        |
+| Vincent Cadena     | Slumdog Millionaire |
+| Brandt Sponseller  | Aliens              |
+| Richard Adams      | Beyond the Sea      |
 
 ### 21. Write a SQL query to find those movies, which have received highest number of stars. Group the result set on movie title and sorts the result-set in ascending order by movie title. Return movie title and maximum number of review stars.
 
+### SQL Query
+
+```sql
+SELECT m.mov_title, MAX(rt.rev_stars) 
+FROM movie m JOIN movie_rating rt ON m.mov_id = rt.mov_id 
+GROUP BY m.mov_title ORDER BY m.mov_title;
+```
+### Result 
+
+| mov_title           | MAX(rt.rev_stars) |
+|---------------------|-------------------|
+| Aliens              |               8.4 |
+| American Beauty     |               7.0 |
+| Annie Hall          |               8.1 |
+| Avatar              |               7.3 |
+| Beyond the Sea      |               6.7 |
+| Blade Runner        |               8.2 |
+| Boogie Nights       |               3.0 |
+| Chinatown           |              NULL |
+| Donnie Darko        |               8.1 |
+| Good Will Hunting   |               4.0 |
+| Lawrence of Arabia  |               8.3 |
+| Princess Mononoke   |               8.4 |
+| Seven Samurai       |               7.7 |
+| Slumdog Millionaire |               8.0 |
+| The Innocents       |               7.9 |
+| The Usual Suspects  |               8.6 |
+| Titanic             |               7.7 |
+| Trainspotting       |              NULL |
+| Vertigo             |               8.4 |
+
 ### 22. Write a SQL query to find all reviewers who rated the movie 'American Beauty'. Return reviewer name.
+
+### SQL Query
+```sql
+SELECT rev_name FROM movie_reviewer WHERE rev_id IN (
+    SELECT rev_id FROM movie_rating WHERE mov_id = (
+        SELECT mov_id FROM movie WHERE mov_title = 'American Beauty'
+    )
+);
+
+```
+
+### Result
+
+| rev_name         |
+|------------------|
+| Sasha Goldshtein |
+
 
 ### 23. Write a SQL query to find the movies that have not been reviewed by any reviewer body other than 'Paul Monks'. Return movie title.
 
+### SQL Query
+```sql
+SELECT m.mov_title
+FROM movie m
+WHERE m.mov_id IN (
+    SELECT mr.mov_id
+    FROM movie_rating mr
+    JOIN movie_reviewer r ON mr.rev_id = r.rev_id
+    WHERE r.rev_name = 'Paul Monks'
+)
+AND m.mov_id NOT IN (
+    SELECT mr.mov_id
+    FROM movie_rating mr
+    JOIN movie_reviewer r ON mr.rev_id = r.rev_id
+    WHERE r.rev_name <> 'Paul Monks'
+);
+```
+
+### Result
+
+| mov_title     |
+|---------------|
+| Boogie Nights |
+
+
 ### 24. Write a SQL query to find the movies with the lowest ratings. Return reviewer name, movie title, and number of stars for those movies.
+
+### SQL Query 
+```sql
+SELECT r.rev_name, m.mov_title, rt.rev_stars 
+FROM movie_reviewer r JOIN movie_rating rt ON r.rev_id = rt.rev_id 
+JOIN movie m ON rt.mov_id = m.mov_id 
+WHERE rt.rev_stars = (SELECT MIN(rev_stars) FROM movie_rating);
+```
+### Result
+| rev_name   | mov_title     | rev_stars |
+|------------|---------------|-----------|
+| Paul Monks | Boogie Nights |       3.0 |
+
 
 ### 25. Write a SQL query to find the movies directed by 'James Cameron'. Return movie title.
 
+### SQL Query
+```sql
+SELECT 
+    mov_title 
+FROM movie 
+WHERE mov_id IN(
+    SELECT 
+        mov_id
+    FROM movie_direction 
+    WHERE dir_id IN(
+        SELECT
+            dir_id 
+        FROM director 
+        WHERE dir_fname = 'James' AND dir_lname = 'Cameron'
+    )
+);
+```
+### Result 
+
+| mov_title |
+|-----------|
+| Titanic   |
+| Aliens    |
+
+
 ### 26. Write a query in SQL to find the movies in which one or more actors appeared in more than one film.
+
+### SQl Query 
+```sql 
+SELECT  
+    *
+FROM  movie m
+WHERE m.mov_id IN(
+    SELECT mc.mov_id 
+    FROM movie_cast mc
+    WHERE mc.act_id IN(
+        SELECT act_id
+        FROM movie_cast
+        GROUP BY act_id
+        HAVING COUNT(DISTINCT mov_id) > 1
+    )
+);
+
+```
+### Result 
+
+| mov_id | mov_title       | mov_year | mov_time | mov_lang | mov_dt_rel | mov_rel_country |
+|--------|-----------------|----------|----------|----------|------------|-----------------|
+|     14 | American Beauty |     1999 |      122 | English  | NULL       | UK              |
+|     23 | Beyond the Sea  |     2004 |      118 | English  | 2004-11-26 | UK              |
 
 
 ## Joins :
 
 ### 27. Write a SQL query to find all reviewers whose ratings contain a NULL value. Return reviewer name.
+
+### SQL Query
+```sql
+SELECT 
+    mr.rev_name
+FROM movie_reviewer mr
+JOIN movie_rating mt ON mr.rev_id = mt.rev_id
+WHERE mt.rev_stars IS NULL;
+```
+
+### Result
+
+
+| rev_name     |
+|--------------|
+| Neal Wruck   |
+| Scott LeBrun |
 
 ### 28. Write a SQL query to find out who was cast in the movie 'Annie Hall'. Return actor first name, last name and role.
 
@@ -402,7 +805,7 @@ WHERE NOT EXISTS (
     FROM movie_cast mc2
     JOIN movie m2 ON mc2.mov_id = m2.mov_id
     WHERE mc2.act_id = a.act_id
-      AND m2.mov_year BETWEEN 1990 AND 2000
+    AND m2.mov_year BETWEEN 1990 AND 2000
 );
 ```
 
@@ -592,7 +995,7 @@ GROUP BY g.gen_title;
 
 
 
-#### 37. Write a SQL query to find movies with the shortest duration. Return movie title, movie year, director first name, last name, actor first name, last name and role.
+### 37. Write a SQL query to find movies with the shortest duration. Return movie title, movie year, director first name, last name, actor first name, last name and role.
 
 ### SQL Query 
 ```sql
@@ -826,10 +1229,121 @@ WHERE a.act_fname = 'Harrison'
 
 ### 47. Write a SQL query to find the highest-rated movies. Return movie title, movie year, review stars and releasing country.
 
+### SQL Query
+```sql
+SELECT 
+    m.mov_title,
+    m.mov_year,
+    mr.rev_stars,
+    m.mov_dt_rel
+FROM movie m
+JOIN movie_rating mr ON m.mov_id = mr.mov_id
+AND mr.rev_stars = (
+    SELECT 
+        max(rev_stars)
+    FROM movie_rating
+)
+```
+### Result
+
+| mov_title          | mov_year | rev_stars | mov_dt_rel |
+|--------------------|----------|-----------|------------|
+| The Usual Suspects |     1995 |       8.6 | 1995-08-25 |
+
+
 
 ### 48. Write a SQL query to find the highest-rated ‘Mystery Movies’. Return the title, year, and rating.
 
+### SQL Query
+```sql
+SELECT 
+    m.mov_title,
+    m.mov_year,
+    mr.rev_stars
+FROM movie m 
+JOIN movie_genres mg ON m.mov_id = mg.mov_id
+JOIN genres g ON mg.gen_id = g.gen_id
+JOIN movie_rating mr ON m.mov_id = mr.mov_id
+WHERE g.gen_title = 'Mystery'
+AND mr.rev_stars = (
+    SELECT MAX(mr2.rev_stars)
+    FROM movie_rating mr2 
+    JOIN movie_genres mg2 ON mr2.mov_id = mg2.mov_id
+    JOIN genres g2 ON mg2.gen_id = g2.gen_id 
+    WHERE g2.gen_title = 'Mystery'
+    AND mr2.rev_stars IS NOT NULL
+);
+
+```
+
+### Result
+
+| mov_title | mov_year | rev_stars |
+|-----------|----------|-----------|
+| Vertigo   |     1958 |       8.4 |
+
+
 ### 49. Write a SQL query to find the years when most of the ‘Mystery Movies’ produced. Count the number of generic title and compute their average rating. Group the result set on movie release year, generic title. Return movie year, generic title, number of generic title and average rating.
+
+### SQL Query
+```sql
+SELECT 
+    m.mov_year,
+    g.gen_title, 
+    COUNT(*) as total_gen,
+    AVG(mr.rev_stars) as mov_avg
+FROM movie_genres mg 
+JOIN genres g ON mg.gen_id = g.gen_id
+LEFT JOIN movie_rating mr ON mg.mov_id = mr.mov_id 
+JOIN movie m ON mg.mov_id = m.mov_id
+WHERE g.gen_title = 'Mystery'
+GROUP BY m.mov_year , g.gen_title;
+```
+### Result 
+
+| mov_year | gen_title | total_gen | mov_avg |
+|----------|-----------|-----------|---------|
+|     1958 | Mystery   |         1 | 8.40000 |
 
 ### 50. Write a query in SQL to generate a report, which contain the fields movie title, name of the female actor, year of the movie, role, movie genres, the director, date of release, and rating of that movie.
 
+
+### SQL
+```sql
+SELECT 
+ m.mov_title ,
+ a.act_fname,
+ a.act_lname,
+ m.mov_year,
+ mc.role,
+ g.gen_title,
+ d.dir_fname,
+ d.dir_lname,
+ m.mov_dt_rel,
+ mr.rev_stars
+FROM
+ movie m
+ JOIN movie_genres mg ON m.mov_id=mg.mov_id
+ JOIN genres g ON g.gen_id = mg.gen_id
+ JOIN movie_cast mc ON mc.mov_id=m.mov_id
+ JOIN actor a ON a.act_id=mc.act_id
+ JOIN movie_direction md ON md.mov_id=m.mov_id
+ JOIN director d ON d.dir_id =md.dir_id
+ JOIN movie_rating mr ON mr.mov_id=m.mov_id;
+```
+### Result 
+
+| mov_title           | act_fname | act_lname | mov_year | role                  | gen_title | dir_fname | dir_lname | mov_dt_rel | rev_stars |
+|---------------------|-----------|-----------|----------|-----------------------|-----------|-----------|-----------|------------|-----------|
+| Aliens              | Sigourney | Weaver    | 1986     | Ripley                | Action    | James     | Cameron   | 1986-08-29 | 8.4       |
+| Lawrence of Arabia  | Peter     | OToole    | 1962     | T.E. Lawrence         | Adventure | David     | Lean      | 1962-12-11 | 8.3       |
+| Princess Mononoke   | Claire    | Danes     | 1997     | San                   | Animation | Hayao     | Miyazaki  | 2001-10-19 | 8.4       |
+| Annie Hall          | Woody     | Allen     | 1977     | Alvy Singer           | Comedy    | Woody     | Allen     | 1977-04-20 | 8.1       |
+| The Usual Suspects  | Stephen   | Baldwin   | 1995     | McManus               | Crime     | Bryan     | Singer    | 1995-08-25 | 8.6       |
+| Trainspotting       | Ewan      | McGregor  | 1996     | Renton                | Drama     | Danny     | Boyle     | 1996-02-23 | NULL      |
+| Slumdog Millionaire | Dev       | Patel     | 2008     | Older Jamal           | Drama     | Danny     | Boyle     | 2009-01-09 | 8.0       |
+| The Innocents       | Deborah   | Kerr      | 1961     | Miss Giddens          | Horror    | Jack      | Clayton   | 1962-02-19 | 7.9       |
+| Beyond the Sea      | Kevin     | Spacey    | 2004     | Bobby Darin           | Music     | Kevin     | Spacey    | 2004-11-26 | 6.7       |
+| Vertigo             | James     | Stewart   | 1958     | John Scottie Ferguson | Mystery   | Alfred    | Hitchcock | 1958-08-24 | 8.4       |
+| American Beauty     | Kevin     | Spacey    | 1999     | Lester Burnham        | Romance   | Sam       | Mendes    | NULL       | 7.0       |
+| Blade Runner        | Harrison  | Ford      | 1982     | Rick Deckard          | Thriller  | Ridley    | Scott     | 1982-09-09 | 8.2       |
